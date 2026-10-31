@@ -1,0 +1,338 @@
+@import "tailwindcss";
+
+/* ============================================
+   EduNish Design System — globals.css
+   Custom dark theme + light mode override
+   ============================================ */
+
+/* ---------- Dark Theme (Default) ---------- */
+:root {
+  --bg-primary: #060a13;
+  --bg-secondary: #0c1220;
+  --bg-tertiary: #111827;
+
+  --surface-1: rgba(255, 255, 255, 0.03);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --surface-3: rgba(255, 255, 255, 0.09);
+  --surface-hover: rgba(255, 255, 255, 0.12);
+
+  --accent-teal: #00e5a0;
+  --accent-teal-dim: rgba(0, 229, 160, 0.15);
+  --accent-teal-glow: rgba(0, 229, 160, 0.3);
+  --accent-violet: #7c5cfc;
+  --accent-violet-dim: rgba(124, 92, 252, 0.15);
+  --accent-violet-glow: rgba(124, 92, 252, 0.3);
+  --accent-amber: #f59e0b;
+
+  --text-primary: #e8e8ed;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-inverse: #060a13;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-accent: rgba(0, 229, 160, 0.3);
+
+  --glass-bg: rgba(12, 18, 32, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 16px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow-teal: 0 0 20px rgba(0, 229, 160, 0.15);
+  --shadow-glow-violet: 0 0 20px rgba(124, 92, 252, 0.15);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+/* ---------- Light Theme ---------- */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-tertiary: #e2e8f0;
+
+  --surface-1: rgba(0, 0, 0, 0.02);
+  --surface-2: rgba(0, 0, 0, 0.04);
+  --surface-3: rgba(0, 0, 0, 0.06);
+  --surface-hover: rgba(0, 0, 0, 0.08);
+
+  --accent-teal: #059669;
+  --accent-teal-dim: rgba(5, 150, 105, 0.1);
+  --accent-teal-glow: rgba(5, 150, 105, 0.2);
+  --accent-violet: #6d28d9;
+  --accent-violet-dim: rgba(109, 40, 217, 0.1);
+  --accent-violet-glow: rgba(109, 40, 217, 0.2);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-inverse: #f8fafc;
+
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-default: rgba(0, 0, 0, 0.1);
+  --border-accent: rgba(5, 150, 105, 0.3);
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-blur: 16px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glow-teal: 0 0 20px rgba(5, 150, 105, 0.1);
+  --shadow-glow-violet: 0 0 20px rgba(109, 40, 217, 0.1);
+
+  color-scheme: light;
+}
+
+/* ---------- Tailwind v4 Theme Tokens ---------- */
+@theme inline {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-hover: var(--surface-hover);
+
+  --color-accent-teal: var(--accent-teal);
+  --color-accent-teal-dim: var(--accent-teal-dim);
+  --color-accent-violet: var(--accent-violet);
+  --color-accent-violet-dim: var(--accent-violet-dim);
+  --color-accent-amber: var(--accent-amber);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-accent: var(--border-accent);
+
+  --font-sans: var(--font-inter), "Noto Sans Sinhala", "Noto Sans Tamil", system-ui, sans-serif;
+
+  --animate-fade-in: fade-in var(--transition-base) ease-out;
+  --animate-slide-up: slide-up var(--transition-base) ease-out;
+  --animate-slide-down: slide-down var(--transition-fast) ease-out;
+  --animate-scale-in: scale-in var(--transition-fast) ease-out;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-gradient: gradient-shift 8s ease infinite;
+}
+
+/* ---------- Base Styles ---------- */
+* {
+  transition: background-color var(--transition-base),
+              border-color var(--transition-base),
+              color var(--transition-base),
+              box-shadow var(--transition-base);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ---------- Scrollbar (dark theme aware) ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--surface-hover);
+}
+
+/* ---------- Selection ---------- */
+::selection {
+  background: var(--accent-teal-dim);
+  color: var(--accent-teal);
+}
+
+/* ---------- Focus Ring ---------- */
+:focus-visible {
+  outline: 2px solid var(--accent-teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+/* Glass Card */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  will-change: transform;
+}
+
+.glass-strong {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  will-change: transform;
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-animated {
+  background: linear-gradient(270deg, var(--accent-teal), var(--accent-violet), var(--accent-teal));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* Glow Effects */
+.glow-teal {
+  box-shadow: var(--shadow-glow-teal);
+}
+.glow-violet {
+  box-shadow: var(--shadow-glow-violet);
+}
+.glow-teal-hover:hover {
+  box-shadow: var(--shadow-glow-teal), var(--shadow-md);
+}
+
+/* Card Hover Effect */
+.card-hover {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.card-hover:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--shadow-lg);
+}
+.card-hover:active {
+  transform: scale(0.98);
+}
+
+/* Button Press Effect */
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* Stagger Animation Delays */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+.stagger-7 { animation-delay: 350ms; }
+.stagger-8 { animation-delay: 400ms; }
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   Keyframe Animations
+   ============================================ */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px var(--accent-teal-glow);
+  }
+  50% {
+    box-shadow: 0 0 24px var(--accent-teal-glow), 0 0 48px rgba(0, 229, 160, 0.1);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(1deg); }
+  66% { transform: translateY(4px) rotate(-1deg); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}

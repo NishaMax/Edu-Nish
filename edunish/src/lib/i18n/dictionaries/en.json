@@ -1,0 +1,106 @@
+{
+  "site": {
+    "name": "EduNish",
+    "tagline": "Free Past Papers for Sri Lankan Students",
+    "description": "Download O/L and A/L past papers, model papers, and marking schemes for free. Available in Sinhala, English, and Tamil."
+  },
+  "nav": {
+    "home": "Home",
+    "ol": "O/L Papers",
+    "al": "A/L Papers",
+    "notes": "Notes",
+    "about": "About",
+    "search": "Search papers..."
+  },
+  "home": {
+    "hero": {
+      "title": "Ace Your Exams",
+      "subtitle": "with Free Past Papers",
+      "description": "Access thousands of O/L and A/L past papers, model papers, and marking schemes. All subjects. All three languages. Completely free.",
+      "cta": "Browse Papers",
+      "search_placeholder": "Search for papers... e.g. 'Maths 2019'"
+    },
+    "grades": {
+      "title": "Select Your Level",
+      "ol_title": "Ordinary Level (O/L)",
+      "ol_subtitle": "Grade 6 – 11",
+      "al_title": "Advanced Level (A/L)",
+      "al_subtitle": "Grade 12 – 13"
+    },
+    "popular": {
+      "title": "Popular Papers",
+      "view_all": "View All"
+    },
+    "features": {
+      "title": "Why EduNish?",
+      "free": {
+        "title": "100% Free",
+        "description": "Every paper is completely free to download. No hidden charges, no subscriptions."
+      },
+      "trilingual": {
+        "title": "All Three Languages",
+        "description": "Papers available in Sinhala, English, and Tamil mediums."
+      },
+      "instant": {
+        "title": "Instant Download",
+        "description": "Download any paper directly to your phone in seconds. No sign-up required."
+      }
+    }
+  },
+  "subjects": {
+    "title": "Subjects",
+    "paper_count": "{count} papers",
+    "filter": {
+      "all": "All",
+      "past_papers": "Past Papers",
+      "model_papers": "Model Papers",
+      "marking_schemes": "Marking Schemes",
+      "notes": "Notes"
+    }
+  },
+  "papers": {
+    "year_listing_title": "{subject} Papers",
+    "available_mediums": "Available in",
+    "download_count": "{count} downloads",
+    "download": "Download PDF",
+    "downloading": "Preparing...",
+    "downloaded": "Downloaded ✓",
+    "view_marking_scheme": "Marking Scheme",
+    "related_papers": "Related Papers",
+    "share": "Share",
+    "request_paper": "Request a Paper"
+  },
+  "search": {
+    "title": "Search Results",
+    "placeholder": "Search papers...",
+    "no_results": "No papers found for \"{query}\"",
+    "suggestion": "Try searching for a subject name or year"
+  },
+  "request": {
+    "title": "Request a Missing Paper",
+    "subject": "Subject",
+    "year": "Year",
+    "medium": "Medium",
+    "message": "Additional details (optional)",
+    "submit": "Submit Request",
+    "success": "Request submitted! We'll try to add it soon.",
+    "error": "Something went wrong. Please try again."
+  },
+  "footer": {
+    "description": "Free educational resources for Sri Lankan students.",
+    "quick_links": "Quick Links",
+    "subjects": "Subjects",
+    "contact": "Contact",
+    "copyright": "© {year} EduNish. All rights reserved."
+  },
+  "common": {
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "grade": "Grade",
+    "year": "Year",
+    "medium": "Medium",
+    "subject": "Subject"
+  }
+}

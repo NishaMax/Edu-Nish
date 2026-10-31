@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+edunish/node_modules/
+
+# Next.js build outputs
+.next/
+edunish/.next/
+out/
+edunish/out/
+build/
+edunish/build/
+
+# Environment variables
+.env
+.env*.local
+edunish/.env
+edunish/.env.local
+edunish/.env.*.local
+!edunish/.env.example
+
+# Vercel
+.vercel/
+edunish/.vercel/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+edunish/next-env.d.ts
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
