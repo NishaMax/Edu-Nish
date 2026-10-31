@@ -16,6 +16,21 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Handle Admin routes without adding /[locale]/
+  if (pathname.startsWith("/admin")) {
+    if (pathname === "/admin/login") {
+      return NextResponse.next();
+    }
+
+    const token = request.cookies.get("edunish_admin_token")?.value;
+    if (!token) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/admin/login";
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
+  }
+
   // Check if pathname starts with a supported locale
   const pathnameSegments = pathname.split("/").filter(Boolean);
   const firstSegment = pathnameSegments[0];
