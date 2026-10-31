@@ -46,7 +46,7 @@ export default function NewPaperPage() {
     setConversion(result);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!conversion.isValid || !conversion.directUrl) {
       alert("Please provide a valid Google Drive link");
@@ -54,19 +54,40 @@ export default function NewPaperPage() {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSuccessMessage(
-        `Successfully saved ${year} ${subject.toUpperCase()} (${medium.toUpperCase()}) paper!`
-      );
-      setDriveUrl("");
-      setConversion({
-        isValid: false,
-        fileId: null,
-        directUrl: null,
-        previewUrl: null,
+    try {
+      const res = await fetch("/api/papers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          exam,
+          subject,
+          year,
+          medium,
+          paperType,
+          driveUrl,
+        }),
       });
-    }, 600);
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSuccessMessage(
+          `Successfully saved ${year} ${subject.toUpperCase()} (${medium.toUpperCase()}) paper! It is now live on the download page.`
+        );
+        setDriveUrl("");
+        setConversion({
+          isValid: false,
+          fileId: null,
+          directUrl: null,
+          previewUrl: null,
+        });
+      } else {
+        alert(data.message || "Failed to save paper");
+      }
+    } catch {
+      alert("Network error while saving paper");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const filteredSubjects = SUBJECTS.filter((s) => s.exam === exam);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Badge } from "@/components/ui/Badge";
@@ -104,6 +104,34 @@ export default function AdminPapersListPage() {
   const [examFilter, setExamFilter] = useState<"all" | "ol" | "al">("all");
   const [mediumFilter, setMediumFilter] = useState<"all" | "si" | "en" | "ta">("all");
 
+  useEffect(() => {
+    async function loadPapers() {
+      try {
+        const res = await fetch("/api/papers");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.papers && data.papers.length > 0) {
+            const formatted: MockPaperItem[] = data.papers.map((p: any) => ({
+              id: p.id,
+              subjectName: p.subject.toUpperCase(),
+              exam: p.exam,
+              year: p.year,
+              medium: p.medium,
+              type: p.paperType === "marking-scheme" ? "Marking Scheme" : "Past Paper",
+              downloads: p.downloads || 0,
+              fileId: p.driveUrl,
+              directUrl: p.directUrl,
+            }));
+            setPapers(formatted);
+          }
+        }
+      } catch {
+        // fallback
+      }
+    }
+    loadPapers();
+  }, []);
+
   const filtered = papers.filter((p) => {
     if (examFilter !== "all" && p.exam !== examFilter) return false;
     if (mediumFilter !== "all" && p.medium !== mediumFilter) return false;
@@ -117,8 +145,13 @@ export default function AdminPapersListPage() {
     return true;
   });
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this paper metadata?")) {
+      try {
+        await fetch(`/api/papers?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      } catch {
+        // ignore
+      }
       setPapers((prev) => prev.filter((p) => p.id !== id));
     }
   };

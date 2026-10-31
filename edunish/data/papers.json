@@ -1,0 +1,38 @@
+[
+  {
+    "id": "sample-ol-ict-2022-si",
+    "exam": "ol",
+    "subject": "ict",
+    "year": 2022,
+    "medium": "si",
+    "paperType": "past-paper",
+    "driveUrl": "https://drive.google.com/file/d/1SAMPLE_ICT_2022_SI/view?usp=sharing",
+    "directUrl": "https://drive.google.com/uc?export=download&id=1SAMPLE_ICT_2022_SI",
+    "downloads": 1420,
+    "createdAt": "2026-10-31T09:50:08.293Z"
+  },
+  {
+    "id": "sample-ol-maths-2023-si",
+    "exam": "ol",
+    "subject": "mathematics",
+    "year": 2023,
+    "medium": "si",
+    "paperType": "past-paper",
+    "driveUrl": "https://drive.google.com/file/d/1SAMPLE_MATHS_2023_SI/view?usp=sharing",
+    "directUrl": "https://drive.google.com/uc?export=download&id=1SAMPLE_MATHS_2023_SI",
+    "downloads": 5120,
+    "createdAt": "2026-10-31T09:50:08.293Z"
+  },
+  {
+    "id": "sample-al-maths-2023-si",
+    "exam": "al",
+    "subject": "combined-mathematics",
+    "year": 2023,
+    "medium": "si",
+    "paperType": "past-paper",
+    "driveUrl": "https://drive.google.com/file/d/1SAMPLE_COMBINED_MATHS_2023/view?usp=sharing",
+    "directUrl": "https://drive.google.com/uc?export=download&id=1SAMPLE_COMBINED_MATHS_2023",
+    "downloads": 8430,
+    "createdAt": "2026-10-31T09:50:08.293Z"
+  }
+]
