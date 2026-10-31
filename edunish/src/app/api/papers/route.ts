@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const medium = searchParams.get("medium") || undefined;
   const paperType = searchParams.get("type") || undefined;
 
-  const papers = findPapers({ exam, subject, year, medium, paperType });
+  const papers = await findPapers({ exam, subject, year, medium, paperType });
   return NextResponse.json({ success: true, count: papers.length, papers });
 }
 
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const saved = savePaper({
+    const saved = await savePaper({
       exam,
       subject,
       year: parseInt(year, 10),
@@ -63,7 +63,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, message: "Missing id" }, { status: 400 });
     }
 
-    const deleted = deletePaper(id);
+    const deleted = await deletePaper(id);
     return NextResponse.json({ success: deleted });
   } catch {
     return NextResponse.json({ success: false, message: "Error" }, { status: 500 });

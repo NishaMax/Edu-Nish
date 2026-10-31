@@ -17,19 +17,19 @@ export async function GET(request: Request) {
   }
 
   // Look up matching paper from store
-  const matches = findPapers({ exam, subject, year, medium, paperType });
+  const matches = await findPapers({ exam, subject, year, medium, paperType });
 
   if (matches.length > 0 && matches[0].directUrl) {
     const paper = matches[0];
-    incrementPaperDownload(paper.id);
+    await incrementPaperDownload(paper.id);
     return NextResponse.redirect(paper.directUrl);
   }
 
   // If not found in store, check if any medium matches
-  const fallbackMatches = findPapers({ exam, subject, year });
+  const fallbackMatches = await findPapers({ exam, subject, year });
   if (fallbackMatches.length > 0 && fallbackMatches[0].directUrl) {
     const paper = fallbackMatches[0];
-    incrementPaperDownload(paper.id);
+    await incrementPaperDownload(paper.id);
     return NextResponse.redirect(paper.directUrl);
   }
 

@@ -1,12 +1,13 @@
 // ============================================
-// EduNish — Persistent Papers Store
-// Stores paper metadata with auto-converted Drive URLs.
-// Uses local JSON storage (and Supabase-ready).
+// EduNish — Hybrid Papers Store (Supabase + Local fallback)
+// If Supabase keys are configured, queries Supabase PostgreSQL.
+// Otherwise, seamlessly stores in data/papers.json.
 // ============================================
 
 import fs from "fs";
 import path from "path";
 import { toDirectDownloadLink } from "./drive";
+import { getSupabaseServerClient, isSupabaseServerConfigured } from "./supabase/server";
 
 export interface StoredPaper {
   id: string;
@@ -24,60 +25,18 @@ export interface StoredPaper {
 const DATA_DIR = path.join(process.cwd(), "data");
 const PAPERS_FILE = path.join(DATA_DIR, "papers.json");
 
-// Default initial seeded papers
-const INITIAL_PAPERS: StoredPaper[] = [
-  {
-    id: "sample-ol-ict-2022-si",
-    exam: "ol",
-    subject: "ict",
-    year: 2022,
-    medium: "si",
-    paperType: "past-paper",
-    driveUrl: "https://drive.google.com/file/d/1SAMPLE_ICT_2022_SI/view?usp=sharing",
-    directUrl: "https://drive.google.com/uc?export=download&id=1SAMPLE_ICT_2022_SI",
-    downloads: 1420,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "sample-ol-maths-2023-si",
-    exam: "ol",
-    subject: "mathematics",
-    year: 2023,
-    medium: "si",
-    paperType: "past-paper",
-    driveUrl: "https://drive.google.com/file/d/1SAMPLE_MATHS_2023_SI/view?usp=sharing",
-    directUrl: "https://drive.google.com/uc?export=download&id=1SAMPLE_MATHS_2023_SI",
-    downloads: 5120,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "sample-al-maths-2023-si",
-    exam: "al",
-    subject: "combined-mathematics",
-    year: 2023,
-    medium: "si",
-    paperType: "past-paper",
-    driveUrl: "https://drive.google.com/file/d/1SAMPLE_COMBINED_MATHS_2023/view?usp=sharing",
-    directUrl: "https://drive.google.com/uc?export=download&id=1SAMPLE_COMBINED_MATHS_2023",
-    downloads: 8430,
-    createdAt: new Date().toISOString(),
-  },
-];
-
 function ensureDataFile(): StoredPaper[] {
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     if (!fs.existsSync(PAPERS_FILE)) {
-      fs.writeFileSync(PAPERS_FILE, JSON.stringify(INITIAL_PAPERS, null, 2), "utf8");
-      return INITIAL_PAPERS;
+      return [];
     }
     const content = fs.readFileSync(PAPERS_FILE, "utf8");
     return JSON.parse(content) as StoredPaper[];
-  } catch (error) {
-    console.error("Error reading papers store:", error);
-    return INITIAL_PAPERS;
+  } catch {
+    return [];
   }
 }
 
@@ -92,17 +51,66 @@ function writeDataFile(papers: StoredPaper[]) {
   }
 }
 
-export function getAllPapers(): StoredPaper[] {
+export async function getAllPapers(): Promise<StoredPaper[]> {
+  if (isSupabaseServerConfigured) {
+    const supabase = getSupabaseServerClient();
+    if (supabase) {
+      const { data, error } = await supabase.from("papers").select("*").order("created_at", { ascending: false });
+      if (!error && data) {
+        return data.map((p) => ({
+          id: p.id,
+          exam: p.exam,
+          subject: p.subject_slug,
+          year: p.year,
+          medium: p.medium,
+          paperType: p.paper_type,
+          driveUrl: p.drive_url,
+          directUrl: p.direct_url,
+          downloads: p.downloads || 0,
+          createdAt: p.created_at,
+        }));
+      }
+    }
+  }
   return ensureDataFile();
 }
 
-export function findPapers(params: {
+export async function findPapers(params: {
   exam?: string;
   subject?: string;
   year?: number;
   medium?: string;
   paperType?: string;
-}): StoredPaper[] {
+}): Promise<StoredPaper[]> {
+  if (isSupabaseServerConfigured) {
+    const supabase = getSupabaseServerClient();
+    if (supabase) {
+      let query = supabase.from("papers").select("*");
+      if (params.exam) query = query.eq("exam", params.exam);
+      if (params.subject) query = query.eq("subject_slug", params.subject);
+      if (params.year) query = query.eq("year", params.year);
+      if (params.medium) query = query.eq("medium", params.medium);
+      if (params.paperType) query = query.eq("paper_type", params.paperType);
+
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) {
+        return data.map((p) => ({
+          id: p.id,
+          exam: p.exam,
+          subject: p.subject_slug,
+          year: p.year,
+          medium: p.medium,
+          paperType: p.paper_type,
+          driveUrl: p.drive_url,
+          directUrl: p.direct_url,
+          downloads: p.downloads || 0,
+          createdAt: p.created_at,
+        }));
+      }
+    }
+  }
+
+  // Local fallback
   const papers = ensureDataFile();
   return papers.filter((p) => {
     if (params.exam && p.exam !== params.exam) return false;
@@ -114,19 +122,55 @@ export function findPapers(params: {
   });
 }
 
-export function savePaper(paperData: {
+export async function savePaper(paperData: {
   exam: "ol" | "al";
   subject: string;
   year: number;
   medium: "si" | "en" | "ta";
   paperType: "past-paper" | "model-paper" | "marking-scheme" | "notes";
   driveUrl: string;
-}): StoredPaper {
-  const papers = ensureDataFile();
+}): Promise<StoredPaper> {
   const conversion = toDirectDownloadLink(paperData.driveUrl);
   const directUrl = conversion.isValid && conversion.directUrl ? conversion.directUrl : paperData.driveUrl;
 
-  // Check if paper already exists for this exact combo
+  if (isSupabaseServerConfigured) {
+    const supabase = getSupabaseServerClient();
+    if (supabase) {
+      const payload = {
+        exam: paperData.exam,
+        subject_slug: paperData.subject,
+        year: paperData.year,
+        medium: paperData.medium,
+        paper_type: paperData.paperType,
+        drive_url: paperData.driveUrl,
+        direct_url: directUrl,
+      };
+
+      const { data, error } = await supabase
+        .from("papers")
+        .upsert(payload, { onConflict: "subject_slug,exam,year,medium,paper_type" })
+        .select()
+        .single();
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          exam: data.exam,
+          subject: data.subject_slug,
+          year: data.year,
+          medium: data.medium,
+          paperType: data.paper_type,
+          driveUrl: data.drive_url,
+          directUrl: data.direct_url,
+          downloads: data.downloads || 0,
+          createdAt: data.created_at,
+        };
+      }
+    }
+  }
+
+  // Local file save
+  const papers = ensureDataFile();
   const existingIndex = papers.findIndex(
     (p) =>
       p.exam === paperData.exam &&
@@ -154,7 +198,15 @@ export function savePaper(paperData: {
   return newPaper;
 }
 
-export function deletePaper(id: string): boolean {
+export async function deletePaper(id: string): Promise<boolean> {
+  if (isSupabaseServerConfigured) {
+    const supabase = getSupabaseServerClient();
+    if (supabase) {
+      const { error } = await supabase.from("papers").delete().eq("id", id);
+      if (!error) return true;
+    }
+  }
+
   const papers = ensureDataFile();
   const filtered = papers.filter((p) => p.id !== id);
   if (filtered.length !== papers.length) {
@@ -164,13 +216,19 @@ export function deletePaper(id: string): boolean {
   return false;
 }
 
-export function incrementPaperDownload(id: string): StoredPaper | null {
+export async function incrementPaperDownload(id: string): Promise<void> {
+  if (isSupabaseServerConfigured) {
+    const supabase = getSupabaseServerClient();
+    if (supabase) {
+      await supabase.rpc("increment_downloads", { row_id: id });
+      return;
+    }
+  }
+
   const papers = ensureDataFile();
   const paper = papers.find((p) => p.id === id);
   if (paper) {
     paper.downloads += 1;
     writeDataFile(papers);
-    return paper;
   }
-  return null;
 }
