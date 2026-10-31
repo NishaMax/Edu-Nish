@@ -102,8 +102,18 @@ export default async function SubjectYearsPage({
               <Badge variant={exam === "ol" ? "teal" : "violet"} size="sm">
                 {examLabel}
               </Badge>
+              {subject.stream && (
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--surface-3)] text-[var(--accent-violet)] border border-[var(--border-subtle)] uppercase">
+                  {subject.stream} Stream
+                </span>
+              )}
+              {subject.basket && (
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--surface-3)] text-[var(--accent-teal)] border border-[var(--border-subtle)] uppercase">
+                  {subject.basket === "core" ? "Compulsory Core" : subject.basket.replace("-", " ")}
+                </span>
+              )}
               <span className="text-xs text-[var(--text-muted)]">
-                Tap 2 of 3 • Select Year
+                • Select Year
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] tracking-tight">
