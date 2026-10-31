@@ -24,14 +24,31 @@ export function RequestForm({
   const [note, setNote] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!subject.trim()) return;
 
     setStatus("submitting");
-    setTimeout(() => {
-      setStatus("success");
-    }, 600);
+    try {
+      const res = await fetch("/api/requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject,
+          year: parseInt(year, 10),
+          medium,
+          message: note,
+        }),
+      });
+      if (res.ok) {
+        setStatus("success");
+        setNote("");
+      } else {
+        setStatus("idle");
+      }
+    } catch {
+      setStatus("idle");
+    }
   };
 
   return (

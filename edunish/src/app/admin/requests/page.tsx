@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Badge } from "@/components/ui/Badge";
@@ -8,63 +8,56 @@ import { Badge } from "@/components/ui/Badge";
 interface StudentRequest {
   id: string;
   subject: string;
-  year: number;
-  medium: string;
+  year?: number;
+  medium?: string;
   message?: string;
-  date: string;
-  status: "pending" | "fulfilled";
+  createdAt: string;
+  status: "pending" | "fulfilled" | "rejected";
 }
 
-const INITIAL_REQUESTS: StudentRequest[] = [
-  {
-    id: "1",
-    subject: "Science Part II",
-    year: 2021,
-    medium: "Sinhala",
-    message: "Need the complete essay marking scheme for Western Province",
-    date: "Oct 31, 2026",
-    status: "pending",
-  },
-  {
-    id: "2",
-    subject: "Business Statistics",
-    year: 2022,
-    medium: "Tamil",
-    message: "Tamil medium A/L question paper missing",
-    date: "Oct 30, 2026",
-    status: "pending",
-  },
-  {
-    id: "3",
-    subject: "Bio-Systems Technology (BST)",
-    year: 2023,
-    medium: "English",
-    message: "Please add English medium marking scheme",
-    date: "Oct 29, 2026",
-    status: "pending",
-  },
-  {
-    id: "4",
-    subject: "Combined Mathematics",
-    year: 2020,
-    medium: "Sinhala",
-    date: "Oct 27, 2026",
-    status: "fulfilled",
-  },
-];
-
 export default function AdminRequestsPage() {
-  const [requests, setRequests] = useState<StudentRequest[]>(INITIAL_REQUESTS);
+  const [requests, setRequests] = useState<StudentRequest[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "fulfilled">("all");
+
+  const loadRequests = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/requests");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setRequests(data.data);
+      }
+    } catch (err) {
+      console.error("Failed to load requests:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRequests();
+  }, []);
 
   const filtered = requests.filter((r) =>
     filter === "all" ? true : r.status === filter
   );
 
-  const handleMarkFulfilled = (id: string) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "fulfilled" } : r))
-    );
+  const handleMarkFulfilled = async (id: string) => {
+    try {
+      const res = await fetch("/api/requests", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: "fulfilled" }),
+      });
+      if (res.ok) {
+        setRequests((prev) =>
+          prev.map((r) => (r.id === id ? { ...r, status: "fulfilled" } : r))
+        );
+      }
+    } catch (err) {
+      console.error("Failed to mark fulfilled:", err);
+    }
   };
 
   return (
@@ -113,62 +106,83 @@ export default function AdminRequestsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filtered.map((req) => (
-          <GlassCard
-            key={req.id}
-            className={`p-5 border-[var(--border-default)] flex flex-col justify-between space-y-4 ${
-              req.status === "fulfilled" ? "opacity-60" : ""
-            }`}
-          >
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Badge
-                  variant={req.status === "pending" ? "amber" : "neutral"}
-                  size="sm"
-                >
-                  {req.status === "pending" ? "● Pending Request" : "✓ Fulfilled"}
-                </Badge>
-                <span className="text-[11px] text-[var(--text-muted)]">
-                  {req.date}
-                </span>
+      {loading ? (
+        <div className="text-center py-12 text-xs text-[var(--text-muted)]">
+          Loading student requests...
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12 text-xs text-[var(--text-muted)] bg-[var(--surface-1)] rounded-2xl border border-[var(--border-subtle)]">
+          No {filter === "all" ? "" : filter} requests found.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filtered.map((req) => (
+            <GlassCard
+              key={req.id}
+              className={`p-5 border-[var(--border-default)] flex flex-col justify-between space-y-4 ${
+                req.status === "fulfilled" ? "opacity-60" : ""
+              }`}
+            >
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Badge
+                    variant={req.status === "pending" ? "amber" : "neutral"}
+                    size="sm"
+                  >
+                    {req.status === "pending" ? "● Pending Request" : "✓ Fulfilled"}
+                  </Badge>
+                  <span className="text-[11px] text-[var(--text-muted)]">
+                    {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : ""}
+                  </span>
+                </div>
+
+                <h3 className="text-base font-bold text-[var(--text-primary)]">
+                  {req.subject} {req.year ? `(${req.year})` : ""}
+                </h3>
+
+                <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+                  <span>
+                    Medium:{" "}
+                    <strong>
+                      {req.medium === "si"
+                        ? "Sinhala"
+                        : req.medium === "ta"
+                        ? "Tamil"
+                        : req.medium === "en"
+                        ? "English"
+                        : req.medium || "Any"}
+                    </strong>
+                  </span>
+                </div>
+
+                {req.message && (
+                  <p className="text-xs text-[var(--text-muted)] bg-[var(--surface-1)] p-2.5 rounded-xl border border-[var(--border-subtle)] italic">
+                    &ldquo;{req.message}&rdquo;
+                  </p>
+                )}
               </div>
 
-              <h3 className="text-base font-bold text-[var(--text-primary)]">
-                {req.subject} ({req.year})
-              </h3>
-
-              <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                <span>Medium: <strong>{req.medium}</strong></span>
-              </div>
-
-              {req.message && (
-                <p className="text-xs text-[var(--text-muted)] bg-[var(--surface-1)] p-2.5 rounded-xl border border-[var(--border-subtle)] italic">
-                  &ldquo;{req.message}&rdquo;
-                </p>
-              )}
-            </div>
-
-            <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
-              <Link
-                href="/admin/papers/new"
-                className="text-[var(--accent-teal)] hover:underline font-semibold"
-              >
-                Upload Paper Now →
-              </Link>
-
-              {req.status === "pending" && (
-                <button
-                  onClick={() => handleMarkFulfilled(req.id)}
-                  className="px-2.5 py-1 rounded-lg bg-[var(--surface-3)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] font-medium cursor-pointer"
+              <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                <Link
+                  href="/admin/papers/new"
+                  className="text-[var(--accent-teal)] hover:underline font-semibold"
                 >
-                  Mark as Fulfilled
-                </button>
-              )}
-            </div>
-          </GlassCard>
-        ))}
-      </div>
+                  Upload Paper Now →
+                </Link>
+
+                {req.status === "pending" && (
+                  <button
+                    onClick={() => handleMarkFulfilled(req.id)}
+                    className="px-2.5 py-1 rounded-lg bg-[var(--surface-3)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] font-medium cursor-pointer"
+                  >
+                    Mark as Fulfilled
+                  </button>
+                )}
+              </div>
+            </GlassCard>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
